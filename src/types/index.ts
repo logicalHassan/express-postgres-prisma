@@ -1,4 +1,4 @@
-import type { User } from '@prisma/client';
+import type { User } from '@/lib/prisma-client';
 import type { Request } from 'express';
 import type { JwtPayload as BaseJwtPayload } from 'jsonwebtoken';
 

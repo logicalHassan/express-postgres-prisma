@@ -1,9 +1,9 @@
 import { env } from '@/config';
 import { tokenTypes } from '@/config/tokens';
 import prisma from '@/lib/prisma';
+import type { Token, TokenType } from '@/lib/prisma-client';
 import type { SafeUser } from '@/types';
 import { ApiError } from '@/utils';
-import type { Token, TokenType } from '@prisma/client';
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';

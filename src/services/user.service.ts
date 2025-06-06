@@ -1,8 +1,8 @@
 import prisma from '@/lib/prisma';
+import type { User as PrismaUser } from '@/lib/prisma-client';
 import type { PaginationFilters, PaginationOptions, SafeUser } from '@/types';
 import { ApiError } from '@/utils';
 import { hashPassword } from '@/utils/password-hash';
-import type { User as PrismaUser } from '@prisma/client';
 import httpStatus from 'http-status';
 
 export const isEmailTaken = async (email: string, excludeUserId?: string): Promise<boolean> => {
