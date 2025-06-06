@@ -1,5 +1,6 @@
 import type { User } from '@prisma/client';
 import type { Request } from 'express';
+import type { JwtPayload as BaseJwtPayload } from 'jsonwebtoken';
 
 export type SafeUser = Omit<User, 'password'>;
 
@@ -10,6 +11,7 @@ export interface PaginationOptions {
   include?: string;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export type PaginationFilters = Record<string, string | any>;
 
 export interface PaginateResult<T> {
@@ -18,6 +20,11 @@ export interface PaginateResult<T> {
   limit: number;
   totalPages: number;
   totalResults: number;
+}
+
+export interface AppJwtPayload extends BaseJwtPayload {
+  sub: string;
+  type: string;
 }
 
 export interface AuthedReq extends Request {
