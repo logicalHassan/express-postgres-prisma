@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import type { User as PrismaUser } from '@/lib/prisma-client';
+import type { User as PrismaUser } from '@/types';
 import type { PaginationFilters, PaginationOptions, SafeUser } from '@/types';
 import { ApiError } from '@/utils';
 import { hashPassword } from '@/utils/password-hash';

@@ -1,6 +1,9 @@
-import type { User } from '@/lib/prisma-client';
 import type { Request } from 'express';
 import type { JwtPayload as BaseJwtPayload } from 'jsonwebtoken';
+import type { Token, TokenType, User } from '../../generated/prisma';
+
+// Central export to prisma-client types
+export type { User, Token, TokenType };
 
 export type SafeUser = Omit<User, 'password'>;
 

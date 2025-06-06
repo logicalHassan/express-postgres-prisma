@@ -139,4 +139,4 @@ dist
 *.pem
 
 # Prisma client
-/src/lib/prisma-client/
+generated

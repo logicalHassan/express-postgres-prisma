@@ -3,8 +3,6 @@ import type { AuthedReq } from '@/types';
 import type { RequestHandler } from 'express';
 import httpStatus from 'http-status';
 
-// TODO: Register route and update password
-
 const login: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
