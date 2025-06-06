@@ -1,12 +1,7 @@
-import type { UserRole } from '@prisma/client';
+import type { User } from '@prisma/client';
+import type { Request } from 'express';
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  isEmailVerified: boolean;
-}
+export type SafeUser = Omit<User, 'password'>;
 
 export interface PaginationOptions {
   page?: number | string;
@@ -23,4 +18,8 @@ export interface PaginateResult<T> {
   limit: number;
   totalPages: number;
   totalResults: number;
+}
+
+export interface AuthedReq extends Request {
+  user: SafeUser;
 }

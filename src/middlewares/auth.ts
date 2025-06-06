@@ -1,15 +1,16 @@
-import jwt from 'jsonwebtoken';
-import httpStatus from 'http-status';
 import { env } from '@/config';
 import { tokenTypes } from '@/config/tokens';
-import { ApiError } from '@/utils/ApiError';
 import { userService } from '@/services';
+import type { AuthedReq } from '@/types';
+import { ApiError } from '@/utils/api-error';
 import type { NextFunction, Request, Response } from 'express';
+import httpStatus from 'http-status';
+import jwt from 'jsonwebtoken';
 
 /**
  * Middleware to authenticate a JWT token and attach the user to the request object.
  */
-const authenticateToken = async (req: Request, res: Response) => {
+const authenticateToken = async (req: Request) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[1];
 
@@ -25,15 +26,15 @@ const authenticateToken = async (req: Request, res: Response) => {
 
   const user = await userService.getUserById(payload.sub);
 
-  req.user = user;
+  (req as AuthedReq).user = user;
 };
 
 /**
  * Authorization middleware that checks if the authenticated user has the required role.
  */
-const auth = (requiredRoles?: string[]) => async (req: Request, res: Response, next: NextFunction) => {
-  await authenticateToken(req, res);
-  const { role } = req.user!;
+const auth = (requiredRoles?: string[]) => async (req: Request, _res: Response, next: NextFunction) => {
+  await authenticateToken(req);
+  const { role } = (req as AuthedReq).user;
   if (requiredRoles?.length && !requiredRoles.includes(role)) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Access denied, Role not allowed');
   }

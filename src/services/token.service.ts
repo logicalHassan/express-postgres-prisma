@@ -1,7 +1,7 @@
 import { env } from '@/config';
 import { tokenTypes } from '@/config/tokens';
 import prisma from '@/lib/prisma';
-import type { User } from '@/types';
+import type { SafeUser } from '@/types';
 import { ApiError } from '@/utils';
 import type { Token, TokenType } from '@prisma/client';
 import httpStatus from 'http-status';
@@ -54,7 +54,7 @@ const verifyToken = async (token: string, type: TokenType) => {
   return tokenDoc;
 };
 
-const generateAuthTokens = async (user: User) => {
+const generateAuthTokens = async (user: SafeUser) => {
   const accessTokenExpires = moment().add(env.jwt.accessExpirationMinutes, 'minutes');
   const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS);
 
@@ -85,7 +85,7 @@ const generateResetPasswordToken = async (email: string) => {
   return resetPasswordToken;
 };
 
-const generateVerifyEmailToken = async (user: User) => {
+const generateVerifyEmailToken = async (user: SafeUser) => {
   const expires = moment().add(env.jwt.verifyEmailExpirationMinutes, 'minutes');
   const verifyEmailToken = generateToken(user.id, expires, tokenTypes.VERIFY_EMAIL);
   await saveToken(verifyEmailToken, user.id, expires, tokenTypes.VERIFY_EMAIL);
