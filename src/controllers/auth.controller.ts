@@ -12,7 +12,7 @@ const login: RequestHandler = async (req, res) => {
 
 const logout: RequestHandler = async (req, res) => {
   await authService.logout(req.body.refreshToken);
-  res.status(httpStatus.OK).send({ success: true, message: 'User Logout Successfully!' });
+  res.status(httpStatus.OK).send({ success: true, message: 'User logout successfully!' });
 };
 
 const forgotPassword: RequestHandler = async (req, res) => {

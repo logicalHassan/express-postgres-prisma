@@ -21,7 +21,7 @@
     "prisma:seed": "prisma db seed",
     "prisma:studio": "prisma studio -n 0.0.0.0",
     "start:docker": "docker compose up --env-file ./.env.production --build -d",
-    "seed:admin": "tsx ./seeds/seed-admin.ts",
+    "seed:admin": "tsx ./scripts/seed-admin.ts",
     "prepare": "husky",
     "postinstall": "prisma generate"
   },
@@ -70,7 +70,7 @@
     "typescript": "^5.8.3"
   },
   "tsup": {
-    "entry": ["src", "!src/types", "!src/**/__tests__/**", "!src/**/*.test.*", "!src/lib/prisma-client/**"],
+    "entry": ["src", "!src/types", "!src/**/__tests__/**", "!src/**/*.test.*"],
     "splitting": false,
     "sourcemap": true,
     "clean": true
