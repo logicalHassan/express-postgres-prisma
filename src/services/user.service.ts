@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import type { User as PrismaUser } from '@/types';
+import type { CreateUserPayload, User as PrismaUser } from '@/types';
 import type { PaginationFilters, PaginationOptions, SafeUser } from '@/types';
 import { ApiError } from '@/utils';
 import { hashPassword } from '@/utils/password-hash';
@@ -16,7 +16,7 @@ export const isEmailTaken = async (email: string, excludeUserId?: string): Promi
   return !!user;
 };
 
-const createUser = async (userBody: PrismaUser) => {
+const createUser = async (userBody: CreateUserPayload) => {
   if (await isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }

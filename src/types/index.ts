@@ -1,6 +1,6 @@
 import type { Request } from 'express';
 import type { JwtPayload as BaseJwtPayload } from 'jsonwebtoken';
-import type { Token, TokenType, User } from '../../generated/prisma';
+import type { Token, TokenType, User, UserRole } from '../../generated/prisma';
 
 // Central export to prisma-client types
 export type { User, Token, TokenType };
@@ -32,4 +32,11 @@ export interface AppJwtPayload extends BaseJwtPayload {
 
 export interface AuthedReq extends Request {
   user: SafeUser;
+}
+
+export interface CreateUserPayload {
+  name: string;
+  email: string;
+  password: string;
+  role?: UserRole;
 }
