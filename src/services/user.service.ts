@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import type { CreateUserPayload, User as PrismaUser } from '@/types';
 import type { PaginationFilters, PaginationOptions, SafeUser } from '@/types';
 import { ApiError } from '@/utils';
-import { hashPassword } from '@/utils/password-hash';
+import { comparePassword, hashPassword } from '@/utils/password-hash';
 import httpStatus from 'http-status';
 
 export const isEmailTaken = async (email: string, excludeUserId?: string): Promise<boolean> => {
@@ -36,13 +36,13 @@ const queryUsers = async (options: PaginationOptions, filters: PaginationFilters
   return prisma.user.paginate<SafeUser>(options, filters, ['password']);
 };
 
-const getUserById = async (id: string) => {
+const getUserById = async (id: string, withPassword = false) => {
   const user = await prisma.user.findUnique({
     where: {
       id,
     },
     omit: {
-      password: true,
+      password: withPassword,
     },
   });
 
@@ -61,6 +61,22 @@ const getUserByEmail = async (email: string) => {
   });
 
   return user;
+};
+
+interface UpdatePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+}
+
+const updatePassword = async (userId: string, requestBody: UpdatePasswordPayload) => {
+  const { oldPassword, newPassword } = requestBody;
+  const user = await getUserById(userId, true);
+  if (!(await comparePassword(oldPassword, user.password))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password');
+  }
+  const updatedUser = await updateUserById(userId, { password: newPassword });
+
+  return updatedUser;
 };
 
 const updateUserById = async (userId: string, updateBody: Partial<PrismaUser>) => {
@@ -100,6 +116,7 @@ export default {
   queryUsers,
   getUserById,
   getUserByEmail,
+  updatePassword,
   updateUserById,
   deleteUserById,
 };

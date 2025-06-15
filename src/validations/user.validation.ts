@@ -21,6 +21,14 @@ const getUsers = {
   }),
 };
 
+const updateProfile = {
+  body: Joi.object().keys({
+    name: Joi.string(),
+    newPassword: Joi.string().custom(password),
+    oldPassword: Joi.string().custom(password),
+  }),
+};
+
 const getUser = {
   params: Joi.object().keys({
     userId: Joi.string().uuid().required(),
@@ -52,4 +60,5 @@ export default {
   getUser,
   updateUser,
   deleteUser,
+  updateProfile,
 };
