@@ -8,9 +8,9 @@
     "start": "pm2 start ecosystem.config.json --no-daemon",
     "start:dev": "tsc && cross-env NODE_ENV=development  tsx src/index",
     "clean": "rm -rf dist",
-    "format": "biome format ./src --write",
-    "lint": "biome lint ./src",
-    "lint:fix": "biome lint ./src --write",
+    "format": "biome format --write",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --write",
     "test": "echo Add a test library",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
@@ -73,13 +73,20 @@
     "typescript": "^5.8.3"
   },
   "tsup": {
-    "entry": ["src", "!src/types", "!src/**/__tests__/**", "!src/**/*.test.*"],
+    "entry": [
+      "src",
+      "!src/types",
+      "!src/**/__tests__/**",
+      "!src/**/*.test.*"
+    ],
     "splitting": false,
     "sourcemap": true,
     "clean": true
   },
   "lint-staged": {
-    "*.{js,ts,cjs,mjs,d.cts,d.mts,json,jsonc}": ["biome check --write --no-errors-on-unmatched"]
+    "*.{js,ts,cjs,mjs,json}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
   },
   "packageManager": "pnpm@10.2.0"
 }
