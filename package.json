@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development tsx watch --clear-screen=false src/index.ts",
+    "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
     "build": "tsc --noEmit && tsup",
     "start": "pm2 start ecosystem.config.json --no-daemon",
     "start:dev": "tsc && cross-env NODE_ENV=development  tsx src/index",
@@ -80,11 +80,10 @@
       "!src/**/*.test.*"
     ],
     "splitting": false,
-    "sourcemap": true,
     "clean": true
   },
   "lint-staged": {
-    "*.{js,ts,cjs,mjs,json}": [
+    "*.{js,ts,cjs,mjs}": [
       "biome check --write --no-errors-on-unmatched"
     ]
   },
