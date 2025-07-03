@@ -1,56 +1,63 @@
-import Joi from 'joi';
-import { password } from './custom.validation';
+import { UserRole } from 'generated/prisma';
+import { z } from 'zod';
+import { isPassword } from './custom.validation';
 
 const createUser = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().custom(password),
-    name: Joi.string().required(),
-    role: Joi.string().valid('ADMIN', 'USER'),
+  body: z.object({
+    email: z.string().email(),
+    password: isPassword,
+    name: z.string(),
+    role: z.nativeEnum(UserRole),
   }),
 };
 
 const getUsers = {
-  query: Joi.object().keys({
-    name: Joi.string(),
-    address: Joi.string(),
-    role: Joi.string(),
-    sortBy: Joi.string(),
-    limit: Joi.number().integer(),
-    page: Joi.number().integer(),
+  query: z.object({
+    name: z.string().optional(),
+    role: z.string().optional(),
+    sortBy: z.string().optional(),
+    limit: z.string().optional(),
+    page: z.string().optional(),
   }),
 };
 
 const updateProfile = {
-  body: Joi.object().keys({
-    name: Joi.string(),
-    newPassword: Joi.string().custom(password),
-    oldPassword: Joi.string().custom(password),
-  }),
+  body: z
+    .object({
+      name: z.string().optional(),
+      newPassword: isPassword.optional(),
+      oldPassword: isPassword.optional(),
+    })
+    .refine((data) => (!data.newPassword && !data.oldPassword) || (data.newPassword && data.oldPassword), {
+      message: 'Both oldPassword and newPassword must be provided together',
+      path: ['newPassword'],
+    }),
 };
 
 const getUser = {
-  params: Joi.object().keys({
-    userId: Joi.string().uuid().required(),
+  params: z.object({
+    userId: z.string().uuid(),
   }),
 };
 
 const updateUser = {
-  params: Joi.object().keys({
-    userId: Joi.string().uuid().required(),
+  params: z.object({
+    userId: z.string().uuid(),
   }),
-  body: Joi.object()
-    .keys({
-      email: Joi.string().email(),
-      password: Joi.string().custom(password),
-      name: Joi.string(),
+  body: z
+    .object({
+      email: z.string().email().optional(),
+      password: isPassword.optional(),
+      name: z.string().optional(),
     })
-    .min(1),
+    .refine((data) => Object.keys(data).length > 0, {
+      message: 'At least one field must be provided',
+    }),
 };
 
 const deleteUser = {
-  params: Joi.object().keys({
-    userId: Joi.string().uuid().required(),
+  params: z.object({
+    userId: z.string().uuid(),
   }),
 };
 

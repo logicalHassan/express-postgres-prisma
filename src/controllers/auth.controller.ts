@@ -1,16 +1,17 @@
 import { authService, emailService, tokenService, userService } from '@/services';
 import type { AuthedReq } from '@/types';
+import type { LoginBody, RegisterBody } from '@/types/validation.types';
 import type { RequestHandler } from 'express';
 import httpStatus from 'http-status';
 
 const register: RequestHandler = async (req, res) => {
-  const user = await userService.createUser(req.body);
+  const user = await userService.createUser(req.body as RegisterBody);
   const tokens = await tokenService.generateAuthTokens(user);
   res.status(httpStatus.CREATED).send({ user, tokens });
 };
 
 const login: RequestHandler = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body as LoginBody;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
   const tokens = await tokenService.generateAuthTokens(user);
   res.send({ user, tokens });

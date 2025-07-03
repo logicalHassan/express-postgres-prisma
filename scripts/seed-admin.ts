@@ -1,5 +1,5 @@
 import readline from 'node:readline';
-import { PrismaClient, type UserRole } from '../src/lib/prisma-client';
+import { PrismaClient, type UserRole } from '../generated/prisma';
 import { hashPassword } from '../src/utils/password-hash';
 
 const rl = readline.createInterface({
