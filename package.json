@@ -19,7 +19,7 @@
     "prisma:pull": "prisma db pull",
     "prisma:seed": "prisma db seed",
     "prisma:studio": "prisma studio -n 0.0.0.0",
-    "start:docker": "docker compose up --env-file ./.env.production --build -d",
+    "start:docker": "docker compose up --env-file ./.env --build -d",
     "seed:admin": "tsx ./scripts/seed-admin.ts",
     "generate": "plop",
     "prepare": "husky",

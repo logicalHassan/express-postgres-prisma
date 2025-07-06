@@ -2,11 +2,6 @@ import readline from 'node:readline';
 import { PrismaClient, type UserRole } from '../generated/prisma';
 import { hashPassword } from '../src/utils/password-hash';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
 const adminDetails: Partial<{ email: string; password: string; name: string; role: UserRole }> = {
   name: 'Admin',
   role: 'ADMIN',
@@ -16,21 +11,13 @@ const prisma = new PrismaClient();
 
 async function seedDatabase() {
   try {
-    console.log('Seeding database...');
+    console.log('\nSeeding database...');
 
-    const existingAdmin = await prisma.user.findFirst({
+    await prisma.user.deleteMany({
       where: { role: 'ADMIN' },
     });
+    console.log('All existing admins removed.');
 
-    if (existingAdmin) {
-      console.log('Existing admin found. Removing the current admin...');
-      await prisma.user.delete({
-        where: { id: existingAdmin.id },
-      });
-      console.log('Existing admin removed.');
-    }
-
-    // Hash the password before saving
     const hashedPassword = await hashPassword(adminDetails.password!);
 
     await prisma.user.create({
@@ -45,21 +32,62 @@ async function seedDatabase() {
     console.log('Admin user created successfully!');
   } catch (err) {
     console.error('Error seeding database:', err);
+    process.exit(1);
   } finally {
     await prisma.$disconnect();
+    process.exit(0);
   }
 }
 
+function promptHidden(question: string): Promise<string> {
+  return new Promise((resolve) => {
+    const stdin = process.stdin;
+    const stdout = process.stdout;
+
+    stdin.resume();
+    stdin.setRawMode(true);
+    stdin.setEncoding('utf8');
+
+    stdout.write(question);
+    let input = '';
+
+    const onData = (char: string) => {
+      if (char === '\n' || char === '\r' || char === '\u0004') {
+        stdin.setRawMode(false);
+        stdout.write('\n');
+        stdin.removeListener('data', onData);
+        resolve(input);
+      } else if (char === '\u0003') {
+        process.exit();
+      } else if (char === '\u007f') {
+        if (input.length > 0) {
+          input = input.slice(0, -1);
+          stdout.write('\b \b');
+        }
+      } else {
+        input += char;
+        stdout.write('*');
+      }
+    };
+
+    stdin.on('data', onData);
+  });
+}
+
 async function promptForAdminDetails() {
-  rl.question('Enter admin email: ', (email) => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question('Enter admin email: ', async (email) => {
+    rl.close();
     adminDetails.email = email;
 
-    rl.question('Enter admin password: ', (password) => {
-      adminDetails.password = password;
+    const password = await promptHidden('Enter admin password: ');
+    adminDetails.password = password;
 
-      seedDatabase();
-      rl.close();
-    });
+    await seedDatabase();
   });
 }
 
