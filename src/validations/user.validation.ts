@@ -1,4 +1,4 @@
-import { UserRole } from 'generated/prisma';
+import { UserRole } from '@/types';
 import { z } from 'zod';
 import { isPassword } from './custom.validation';
 
