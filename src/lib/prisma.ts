@@ -1,5 +1,5 @@
 import paginate from '@/utils/paginate';
-import { PrismaClient } from '../../generated/prisma';
+import { PrismaClient } from '@root/generated/prisma';
 
 const prisma = new PrismaClient().$extends({
   model: {

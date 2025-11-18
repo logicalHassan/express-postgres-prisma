@@ -4,7 +4,8 @@
     "module": "CommonJS",
     "outDir": "./dist",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@root/*": ["./*"]
     },
     "strict": true,
     "esModuleInterop": true,
