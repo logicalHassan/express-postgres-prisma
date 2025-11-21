@@ -11,6 +11,7 @@ import express from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
 import helmet from 'helmet';
 import httpStatus from 'http-status';
+import { prismaErrorHandler } from './middlewares/prisma-error';
 
 const app = express();
 
@@ -54,6 +55,9 @@ app.use('/v1', routes);
 app.use((_req, _res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'No endpoint found'));
 });
+
+// Normalizing prisma thrown errors
+app.use(prismaErrorHandler);
 
 // convert error to ApiError, if needed
 app.use(errorConverter);

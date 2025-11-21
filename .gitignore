@@ -140,3 +140,4 @@ dist
 
 # Prisma client
 generated
+/generated/prisma

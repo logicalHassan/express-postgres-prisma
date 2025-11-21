@@ -1,7 +1,12 @@
+import { env } from '@/config';
 import paginate from '@/utils/paginate';
-import { PrismaClient } from '@root/generated/prisma';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@root/generated/prisma/client';
 
-const prisma = new PrismaClient().$extends({
+const connectionString = `${env.db.url}`;
+
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter }).$extends({
   model: {
     $allModels: {
       paginate,
