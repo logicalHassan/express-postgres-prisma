@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 const envVarsSchema = z.object({
   NODE_ENV: z.enum(['production', 'development', 'test']),
   PORT: z.coerce.number().default(3000),
-  DATABASE_URL: z.string().min(1, 'MONGO_URI is required'),
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
   JWT_ACCESS_EXPIRATION_MINUTES: z.coerce.number().default(30),
   JWT_REFRESH_EXPIRATION_DAYS: z.coerce.number().default(30),
