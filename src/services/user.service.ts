@@ -33,7 +33,7 @@ const createUser = async (userBody: CreateUserPayload) => {
 };
 
 const queryUsers = async (options: PaginationOptions, filters: PaginationFilters) => {
-  return prisma.user.paginate<SafeUser>(options, filters, ['password']);
+  return prisma.user.paginate<SafeUser>({ options, filters, omit: ['password'] });
 };
 
 const getUserById = async (id: string, withPassword = false) => {

@@ -1,46 +1,45 @@
 import type { PaginationFilters, PaginationOptions } from '@/types';
 
-async function paginate<T>(this: any, options: PaginationOptions, filters: PaginationFilters, omit: string[] = []) {
+interface PaginateArgs {
+  options?: PaginationOptions;
+  filters?: PaginationFilters;
+  omit?: string[];
+  include?: Record<string, any>;
+}
+
+async function paginate<T>(this: any, args: PaginateArgs) {
+  const { options = {}, filters = {}, include = {}, omit = [] } = args;
+
   const page = Number(options.page) || 1;
   const limit = Number(options.limit) || 10;
   const offset = (page - 1) * limit;
 
-  // Convert comma-separated include string to object
-  let includeOptions = {};
-  if (typeof options.include === 'string') {
-    includeOptions = options.include
-      .split(',')
-      .map((key) => key.trim())
-      .reduce(
-        (acc, key) => {
-          if (key) acc[key] = true;
-          return acc;
-        },
-        {} as Record<string, true>,
-      );
-  }
+  const where: Record<string, any> = { ...filters };
 
-  // Search query implementation
-  let searchQuery = {};
-  if (filters.search) {
-    const [key, value] = filters.search.split(':');
-    searchQuery = {
-      [key]: {
-        contains: value,
-        mode: 'insensitive',
-      },
-    };
-
-    // biome-ignore lint/performance/noDelete: <explanation>
-    delete filters.search;
-  }
-
-  // Modify filters to handle array
-  Object.entries(filters).forEach(([key, value]) => {
+  // Handle Array Filters (comma separated strings)
+  Object.keys(where).forEach((key) => {
+    const value = where[key];
     if (typeof value === 'string' && value.includes(',')) {
-      filters[key] = { in: value.split(',').map((v) => v.trim()) };
+      where[key] = { in: value.split(',').map((v) => v.trim()) };
     }
   });
+
+  // Search Logic (Partial match)
+  if (where.search) {
+    const searchStr = where.search as string;
+    delete where.search;
+
+    const firstColonIndex = searchStr.indexOf(':');
+    if (firstColonIndex !== -1) {
+      const key = searchStr.substring(0, firstColonIndex);
+      const value = searchStr.substring(firstColonIndex + 1);
+
+      where[key] = {
+        contains: value,
+        mode: 'insensitive',
+      };
+    }
+  }
 
   // Build sorting criteria from query string
   let sort: Record<string, 'asc' | 'desc'>[];
@@ -55,22 +54,17 @@ async function paginate<T>(this: any, options: PaginationOptions, filters: Pagin
     sort = [{ createdAt: 'asc' }];
   }
 
-  // Handle omitted fields
+  // Handle omitted fields, Prisma 6+
   const omitOptions: Record<string, boolean> = {};
   omit?.forEach((opt: string) => {
     omitOptions[opt] = true;
   });
 
-  const where = {
-    ...filters,
-    ...searchQuery,
-  };
-
   // Fetch paginated data with the sorting criteria
   const [results, totalRecords] = await Promise.all([
     this.findMany({
       where,
-      include: includeOptions,
+      include,
       take: limit,
       skip: offset,
       orderBy: sort,

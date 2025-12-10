@@ -14,6 +14,7 @@ const createUser = {
 const getUsers = {
   query: z.object({
     name: z.string().optional(),
+    search: z.string().optional(),
     role: z.preprocess((val) => (typeof val === 'string' ? val.toUpperCase() : val), z.nativeEnum(UserRole).optional()),
     sortBy: z.string().optional(),
     limit: z.string().optional(),
