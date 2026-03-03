@@ -1,13 +1,12 @@
 import readline from 'node:readline';
-import { PrismaClient, type UserRole } from '../generated/prisma';
 import { hashPassword } from '../src/utils/password-hash';
+import { UserRole } from '@/generated/prisma/enums';
+import prisma from '@/lib/prisma';
 
 const adminDetails: Partial<{ email: string; password: string; name: string; role: UserRole }> = {
   name: 'Admin',
   role: 'ADMIN',
 };
-
-const prisma = new PrismaClient();
 
 async function seedDatabase() {
   try {

@@ -1,6 +1,6 @@
-import { Token, TokenType, User, UserRole } from '@root/generated/prisma/client';
 import type { Request } from 'express';
 import type { JwtPayload as BaseJwtPayload } from 'jsonwebtoken';
+import { Token, TokenType, User, UserRole } from '../generated/prisma/client';
 
 // Central export to prisma-client types
 export { User, Token, TokenType, UserRole };
